@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Certificate;
 use Illuminate\Http\Request;
 use setasign\Fpdi\Fpdi;
+use Endroid\QrCode\QrCode;
+use Endroid\QrCode\Writer\PngWriter;
 
 class CertificateController extends Controller
 {
@@ -107,6 +109,21 @@ class CertificateController extends Controller
         $pdf->SetFont('CaviarDreams-Bold', '', 12);
         $pdf->SetXY(0, 59);
         $pdf->Cell(275, 10, "{$credential_number}", 0, 1, 'C');
+        
+        // Generate QR Code (menggunakan endroid/qr-code)
+        $qrCode = new QrCode($credential_number); // Anda bisa mengganti ini dengan informasi lain yang ingin dimasukkan ke QR
+        $writer = new PngWriter();
+        $qrImage = $writer->write($qrCode);
+
+        // Menyimpan QR Code sebagai file sementara
+        $qrCodePath = public_path('temp_qr_code.png');
+        file_put_contents($qrCodePath, $qrImage->getString());
+
+        // Menambahkan QR Code ke PDF (misalnya di sudut kanan bawah)
+        $pdf->Image($qrCodePath, 100, 164, 20, 20); // X, Y, width, height (sesuaikan sesuai kebutuhan)
+
+        // Menghapus file QR Code setelah dimasukkan ke PDF
+        unlink($qrCodePath);
         
         return response($pdf->Output('S', 'certificate.pdf'), 200)
             ->header('Content-Type', 'application/pdf')
