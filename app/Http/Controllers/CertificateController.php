@@ -14,22 +14,26 @@ class CertificateController extends Controller
     }
 
     public function store(Request $request)
-    {
-        // Menambahkan credential_number
-        $request->merge([
-            'credential_number' => "E-learning-Bosowa/{$request->course}/" . date('Y', strtotime($request->date)),
-        ]);
+{
+    // Mengganti spasi dengan tanda minus pada nama kursus
+    $course = str_replace(' ', '-', $request->course);
 
-        $certificate = Certificate::create($request->validate([
-            'name' => 'required|string',
-            'course' => 'required|string',
-            'duration' => 'required|string',
-            'date' => 'required|date',
-            'credential_number' => 'required|string',
-        ]));
+    // Menambahkan credential_number dengan nama kursus yang sudah diubah
+    $request->merge([
+        'credential_number' => "{$request->credential_number}/{$course}/E-learning-Bosowa/" . date('Y', strtotime($request->date)),
+    ]);
 
-        return redirect()->route('certificate.generate', ['id' => $certificate->id]);
-    }
+    $certificate = Certificate::create($request->validate([
+        'name' => 'required|string',
+        'course' => 'required|string',
+        'duration' => 'required|string',
+        'date' => 'required|date',
+        'credential_number' => 'required|string',
+    ]));
+
+    return redirect()->route('certificate.generate', ['id' => $certificate->id]);
+}
+
 
     public function generate($id)
     {

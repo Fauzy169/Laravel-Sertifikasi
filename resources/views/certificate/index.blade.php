@@ -17,11 +17,14 @@
         <input type="text" id="course" name="course" required><br><br>
     
         <label for="duration">Durasi Pelatihan:</label>
-        <input type="text" id="duration" name="duration" required><br><br> <!-- Pastikan ini ada -->
+        <input type="text" id="duration" name="duration" required><br><br>
     
         <label for="date">Tanggal:</label>
         <input type="date" id="date" name="date" required><br><br>
     
+        <label for="credential_number">Nomor Credential:</label>
+        <input type="text" id="credential_number" name="credential_number" required placeholder="Nomor Credential/Kode Course/E-learning-Bosowa/TahunCredential"><br><br>
+
         <button type="submit">Generate Sertifikat</button>
     </form>
 </body>
