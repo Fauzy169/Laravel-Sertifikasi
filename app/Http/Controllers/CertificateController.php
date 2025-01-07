@@ -63,10 +63,37 @@ class CertificateController extends Controller
         // Set warna teks #4D4D4D (RGB: 77, 77, 77)
         $pdf->SetTextColor(77, 77, 77);
 
-        // Nama Peserta
-        $pdf->SetFont('CrimsonText-BoldItalic', '', 50);
+        // Penyesuaian Nama Peserta
+        $max_width = 150; // Lebar maksimal untuk nama peserta
+        $font_size = 50;  // Ukuran font awal
+
+        // Cek panjang nama peserta dengan font ukuran 50
+        $pdf->SetFont('CrimsonText-BoldItalic', '', $font_size);
         $pdf->SetXY(0, 87);
-        $pdf->Cell(275, 10, $certificate->name, 0, 1, 'C');
+        $text_width = $pdf->GetStringWidth($certificate->name);
+
+        // Jika nama masih terlalu panjang, kecilkan ukuran font menjadi 40
+        if ($text_width > $max_width) {
+            $font_size = 30;
+            $pdf->SetFont('CrimsonText-BoldItalic', '', $font_size);
+            $pdf->SetXY(0, 87);
+            $text_width = $pdf->GetStringWidth($certificate->name);
+
+            // Jika nama masih terlalu panjang, bagi menjadi dua baris
+            if ($text_width > $max_width) {
+                $wrapped_name = wordwrap($certificate->name, 15, "\n");
+                $pdf->SetXY(0, 87);
+                $pdf->MultiCell(275, 10, $wrapped_name, 0, 'C');
+            } else {
+                // Nama tetap dalam satu baris dengan font 40
+                $pdf->SetXY(0, 87);
+                $pdf->Cell(275, 10, $certificate->name, 0, 1, 'C');
+            }
+        } else {
+            // Nama tetap dalam satu baris dengan font 50
+            $pdf->SetXY(0, 87);
+            $pdf->Cell(275, 10, $certificate->name, 0, 1, 'C');
+        }
 
         // Nama Pelatihan
         $pdf->SetFont('CaviarDreams-Bold', '', 12);
@@ -76,7 +103,7 @@ class CertificateController extends Controller
         // Durasi Pelatihan
         $pdf->SetFont('CaviarDreams-Regular', '', 12);
         $pdf->SetXY(20, 133);
-        $text = "Sertifikat ini diberikan sebagai penghargaan atas keberhasilan dalam menyelesaikan pelatihan ini sebagai peserta, dalam jangka waktu {$certificate->duration}, dengan penuh dedikasi dan komitmen.";
+        $text = "Sertifikat ini diberikan sebagai penghargaan atas keberhasilan dalam menyelesaikan pelatihan ini sebagai peserta yang meliputi {$certificate->duration} pelajaran, dengan penuh dedikasi dan komitmen.";
         $wrappedText = wordwrap($text, 10 * 7, "\n");
 
         $pdf->MultiCell(235, 6, $wrappedText, 0, 'C');
