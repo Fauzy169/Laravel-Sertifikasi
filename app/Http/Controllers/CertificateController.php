@@ -14,25 +14,31 @@ class CertificateController extends Controller
     }
 
     public function store(Request $request)
-{
-    // Mengganti spasi dengan tanda minus pada nama kursus
-    $course = str_replace(' ', '-', $request->course);
+    {
+        // Ambil nilai kode kursus
+        $course_code = $request->course_code;
 
-    // Menambahkan credential_number dengan nama kursus yang sudah diubah
-    $request->merge([
-        'credential_number' => "{$request->credential_number}/{$course}/E-learning-Bosowa/" . date('Y', strtotime($request->date)),
-    ]);
+        // Jika kode kursus tidak ada, ganti spasi dalam nama kursus dengan tanda minus
+        if (!$course_code) {
+            $course_code = str_replace(' ', '-', $request->course);
+        }
 
-    $certificate = Certificate::create($request->validate([
-        'name' => 'required|string',
-        'course' => 'required|string',
-        'duration' => 'required|string',
-        'date' => 'required|date',
-        'credential_number' => 'required|string',
-    ]));
+        // Menambahkan credential_number menggunakan course_code yang sudah diubah
+        $request->merge([
+            'credential_number' => "{$request->credential_number}/{$course_code}/E-learning-Bosowa/" . date('Y', strtotime($request->date)),
+        ]);
 
-    return redirect()->route('certificate.generate', ['id' => $certificate->id]);
-}
+        $certificate = Certificate::create($request->validate([
+            'name' => 'required|string',
+            'course' => 'required|string',
+            'course_code' => 'required|string',
+            'duration' => 'required|string',
+            'date' => 'required|date',
+            'credential_number' => 'required|string',
+        ]));
+
+        return redirect()->route('certificate.generate', ['id' => $certificate->id]);
+    }
 
 
     public function generate($id)
@@ -78,7 +84,7 @@ class CertificateController extends Controller
         // Nomor Credential
         $pdf->SetFont('CaviarDreams-Bold', '', 12);
         $pdf->SetXY(0, 59);
-        $pdf->Cell(275, 10, "Credential: {$credential_number}", 0, 1, 'C');
+        $pdf->Cell(275, 10, "{$credential_number}", 0, 1, 'C');
 
         return response($pdf->Output('S', 'certificate.pdf'), 200)
             ->header('Content-Type', 'application/pdf')

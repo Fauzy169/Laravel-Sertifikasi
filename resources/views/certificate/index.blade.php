@@ -15,6 +15,9 @@
     
         <label for="course">Kursus:</label>
         <input type="text" id="course" name="course" required><br><br>
+        
+        <label for="course_code">Kode Kursus:</label>
+        <input type="text" id="course_code" name="course_code" required placeholder="Masukkan Kode Kursus"><br><br>
     
         <label for="duration">Durasi Pelatihan:</label>
         <input type="text" id="duration" name="duration" required><br><br>
