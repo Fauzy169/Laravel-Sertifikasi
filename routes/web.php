@@ -11,3 +11,7 @@ Route::get('/', function () {
 Route::get('/certificate', [CertificateController::class, 'index'])->name('certificate.index');
 Route::post('/certificate', [CertificateController::class, 'store'])->name('certificate.store');
 Route::get('/certificate/generate/{id}', [CertificateController::class, 'generate'])->name('certificate.generate');
+
+Route::get('/coursecomplete', function () {
+    return view('coursecomplete');
+});
